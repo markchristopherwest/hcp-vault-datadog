@@ -4,12 +4,21 @@ terraform {
       source = "hashicorp/hcp"
       version = "0.53.0"
     }
+    vault = {
+      source = "hashicorp/vault"
+      version = "3.12.0"
+    }
   }
 }
 
 provider "hcp" {
   # Configuration options
 }
+# provider "vault" {
+#   # Configuration options
+#   # token = hcp_vault_cluster_admin_token.example.token
+#   # address = hcp_vault_cluster.example.vault_public_endpoint_url
+# }
 
 variable "datadog_api_key" {
  type = string
@@ -55,12 +64,22 @@ resource "hcp_vault_cluster" "example" {
 #     datadog_region  = var.datadog_site
 #   }
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
 }
 
 resource "hcp_vault_cluster_admin_token" "example" {
   cluster_id = hcp_vault_cluster.example.cluster_id
+}
+
+output "hcp_vault_cluster_admin_token" {
+  value = hcp_vault_cluster_admin_token.example.token
+  sensitive = true
+}
+
+output "hcp_vault_cluster_url" {
+  value = hcp_vault_cluster.example.vault_public_endpoint_url
+  sensitive = true
 }
 
 # # Create a new Datadog API Key
